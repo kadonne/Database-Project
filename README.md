@@ -66,14 +66,6 @@ Database-Project/
 * `Sub_Ind(comp_id, ind_id)`
   * Company sub-industry classifications
 
-**Schema:**
-
-```sql
--- See full LD schema in LD_schema.sql
--- Key tables include: person, skill, position, job, company, 
--- GICS, course, works, has_skill, requires, teaches
-```
-
 ### 2. AZ Database (Auto Zone)
 
 **Purpose**: Multi-store retail operations with employee management, inventory tracking, and financial operations
@@ -103,14 +95,6 @@ Database-Project/
 * `Has_Skill(per_id, sk_code)`
   * Employee skills
 
-**Schema:**
-
-```sql
--- See full AZ schema in AZ_schema.sql
--- Key tables include: store, inventory, sales, purchase, 
--- supplier, account_payable, purchase_payment_record, stocking
-```
-
 ### 3. GV Database (Manufacturing)
 
 **Purpose**: Multi-factory manufacturing operations with material management, production tracking, and contract fulfillment
@@ -135,14 +119,6 @@ Database-Project/
   * Position skill requirements
 * `Has_Skill(per_id, sk_code)`
   * Employee skills
-
-**Schema:**
-
-```sql
--- See full GV schema in GV_schema.sql
--- Key tables include: factory, material, product, contract, 
--- lineitem, purchase
-```
 
 ## Key Features
 
