@@ -267,12 +267,6 @@ psql -U username -d az_database -f AZ_schema.sql
 psql -U username -d gv_database -f GV_schema.sql
 ```
 
-**Or use the combined script:**
-
-```bash
-psql -U username -d database_name -f make_tables.sql
-```
-
 ### 3. Data Population
 
 **Generate INSERT statements:**
