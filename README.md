@@ -122,7 +122,7 @@ Database-Project/
 
 ## Key Features
 
-### 28 Complex SQL Queries
+### 27 Complex SQL Queries
 
 The project implements comprehensive queries across all three databases:
 
