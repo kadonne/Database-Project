@@ -279,9 +279,9 @@ java Populate_tables > insert_data.sql
 **Execute for each database:**
 
 ```bash
-psql -U username -d ld_database -f insert_data.sql
-psql -U username -d az_database -f insert_data.sql
-psql -U username -d gv_database -f insert_data.sql
+psql -U username -d ld_database -f populate.sql
+psql -U username -d az_database -f populate.sql
+psql -U username -d gv_database -f populate.sql
 ```
 
 ### 4. JDBC Configuration
