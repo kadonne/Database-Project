@@ -569,51 +569,6 @@ contract_id → cus_id, date, sale_amount, pay_schedule
 * Transaction rollback scenarios
 * Multi-database synchronization
 
-### Data Validation
-
-**Referential Integrity:**
-```sql
--- Check orphaned records
-SELECT j.job_code FROM job j
-WHERE j.per_id NOT IN (SELECT per_id FROM person);
-
--- Check missing skills
-SELECT r.sk_code FROM requires r
-WHERE r.sk_code NOT IN (SELECT sk_code FROM skill);
-```
-
-## Performance Optimization
-
-### Indexing Strategy
-
-**Recommended indexes:**
-
-```sql
--- LD Database
-CREATE INDEX idx_works_per_id ON works(per_id);
-CREATE INDEX idx_works_job_code ON works(job_code);
-CREATE INDEX idx_has_skill_per_id ON has_skill(per_id);
-CREATE INDEX idx_requires_pos_code ON requires(pos_code);
-
--- AZ Database
-CREATE INDEX idx_sales_date ON sales(s_year, s_month, s_day);
-CREATE INDEX idx_sales_item ON sales(item_num);
-CREATE INDEX idx_inventory_min ON inventory(quantity, min_level);
-
--- GV Database
-CREATE INDEX idx_contract_date ON contract(date);
-CREATE INDEX idx_lineitem_contract ON lineitem(contract_id);
-CREATE INDEX idx_makes_fac ON makes(fac_id);
-```
-
-### Query Optimization Tips
-
-1. **Use EXISTS instead of IN for large subqueries**
-2. **Avoid SELECT \* - specify needed columns**
-3. **Use LIMIT for large result sets**
-4. **Leverage indexes on foreign keys**
-5. **Use EXPLAIN ANALYZE to identify bottlenecks**
-
 ## Known Limitations
 
 * Date fields stored as VARCHAR instead of DATE type
