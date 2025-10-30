@@ -136,13 +136,13 @@ The project implements comprehensive queries across all three databases:
 7. Analyze sales by time period (AZ)
 8. Calculate biggest profit items (AZ)
 
-**Business Analytics (Queries 9-12):**
+**Business Analytics (Queries 9-12):**<br>
 9. Inventory below minimum levels (AZ)<br>
 10. Customer sales totals (GV)<br>
 11. Most purchased materials by quarter (GV)<br>
 12. Top producing factory for best-selling product (GV)<br>
 
-**Workforce Management (Queries 13-18):**
+**Workforce Management (Queries 13-18):**<br>
 13. Complete employment history for person<br>
 14. Crisis response - find all workers who held specific positions<br>
 15. Find unemployed workers with specific experience<br>
@@ -150,7 +150,7 @@ The project implements comprehensive queries across all three databases:
 17. Identify biggest employers, industries, and industry groups<br>
 18. Job distribution across industries
 
-**Advanced Matching (Queries 19-25):**
+**Advanced Matching (Queries 19-25):**<br>
 19. Course recommendations for skill gaps<br>
 20. Best-paying positions based on skills<br>
 21. List qualified candidates for positions<br>
@@ -159,7 +159,7 @@ The project implements comprehensive queries across all three databases:
 24. Analyze missing skills frequency<br>
 25. Track earning increases by industry group<br>
 
-**Strategic Optimization (Queries 26-27):**
+**Strategic Optimization (Queries 26-27):**<br>
 26. Positions with most openings due to skill shortages<br>
 27. Course sets addressing high-demand skill gaps<br>
 
