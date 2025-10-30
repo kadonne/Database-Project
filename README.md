@@ -137,32 +137,31 @@ The project implements comprehensive queries across all three databases:
 8. Calculate biggest profit items (AZ)
 
 **Business Analytics (Queries 9-12):**
-9. Inventory below minimum levels (AZ)
-10. Customer sales totals (GV)
-11. Most purchased materials by quarter (GV)
-12. Top producing factory for best-selling product (GV)
+9. Inventory below minimum levels (AZ)<br>
+10. Customer sales totals (GV)<br>
+11. Most purchased materials by quarter (GV)<br>
+12. Top producing factory for best-selling product (GV)<br>
 
 **Workforce Management (Queries 13-18):**
-13. Complete employment history for person
-14. Crisis response - find all workers who held specific positions
-15. Find unemployed workers with specific experience
-16. Industry salary statistics (avg, max, min)
-17. Identify biggest employers, industries, and industry groups
+13. Complete employment history for person<br>
+14. Crisis response - find all workers who held specific positions<br>
+15. Find unemployed workers with specific experience<br>
+16. Industry salary statistics (avg, max, min)<br>
+17. Identify biggest employers, industries, and industry groups<br>
 18. Job distribution across industries
 
 **Advanced Matching (Queries 19-25):**
-19. Course recommendations for skill gaps
-20. Best-paying positions based on skills
-21. List qualified candidates for positions
-22. "Missing-k" analysis (candidates missing k < 4 skills)
-23. Find best candidates for new positions
-24. Analyze missing skills frequency
-25. Track earning increases by industry group
+19. Course recommendations for skill gaps<br>
+20. Best-paying positions based on skills<br>
+21. List qualified candidates for positions<br>
+22. "Missing-k" analysis (candidates missing k < 4 skills)<br>
+23. Find best candidates for new positions<br>
+24. Analyze missing skills frequency<br>
+25. Track earning increases by industry group<br>
 
-**Strategic Optimization (Queries 26-28):**
-26. Positions with most openings due to skill shortages
-27. Course sets addressing high-demand skill gaps
-28. Complete training plans with prerequisites (Bonus)
+**Strategic Optimization (Queries 26-27):**
+26. Positions with most openings due to skill shortages<br>
+27. Course sets addressing high-demand skill gaps<br>
 
 ### JDBC Applications
 
