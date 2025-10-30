@@ -571,7 +571,6 @@ contract_id → cus_id, date, sale_amount, pay_schedule
 
 ## Known Limitations
 
-* Date fields stored as VARCHAR instead of DATE type
 * No authentication/authorization system
 * Single-user application (no concurrency control beyond transactions)
 * Limited to three databases (LD, AZ, GV)
@@ -583,8 +582,6 @@ contract_id → cus_id, date, sale_amount, pay_schedule
 
 * [ ] Implement web-based UI with REST API
 * [ ] Add user authentication and role-based access control
-* [ ] Convert VARCHAR dates to proper DATE/TIMESTAMP types
-* [ ] Implement connection pooling for better performance
 * [ ] Add data visualization dashboard
 * [ ] Implement stored procedures for complex operations
 * [ ] Add machine learning for job matching recommendations
@@ -592,7 +589,6 @@ contract_id → cus_id, date, sale_amount, pay_schedule
 * [ ] Implement automated data synchronization between databases
 * [ ] Add comprehensive logging and audit trails
 * [ ] Create mobile application interface
-* [ ] Implement data warehousing for historical analytics
 
 ## Educational Objectives
 
@@ -636,7 +632,7 @@ Consider using explicit locking if necessary
 
 ## Contributing
 
-This is an academic project completed as part of a Database Systems course. For questions or clarifications, please contact the team members.
+This is an academic project completed as part of a Database Systems course. For questions or clarifications, please contact the lead team member.
 
 ## License
 
