@@ -26,10 +26,6 @@ Database-Project/
 ├── AZ_Schema.docx                # Auto Zone database schema
 ├── GV_Schema.docx                # Manufacturing database schema  
 ├── LD_schema.dcox                # Labor Department database schema
-├── queries/                      # SQL query implementations (28 queries)
-│   ├── query_01.sql
-│   ├── query_02.sql
-│   └── ...
 ```
 
 ## Database Architectures
