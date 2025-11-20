@@ -23,16 +23,9 @@ Database-Project/
 ├── DatabaseRunner.java           # Main JDBC application driver
 ├── Populate_tables.java          # Automated data generation
 ├── make_tables.sql               # Complete schema creation scripts
-├── AZ_schema.sql                 # Auto Zone database schema
-├── GV_schema.sql                 # Manufacturing database schema  
-├── LD_schema.sql                 # Labor Department database schema
-├── queries/                      # SQL query implementations (28 queries)
-│   ├── query_01.sql
-│   ├── query_02.sql
-│   └── ...
-└── docs/                         # Project documentation
-    ├── ER_Diagram.pdf
-    └── Functional_Dependencies.pdf
+├── AZ_Schema.docx                # Auto Zone database schema
+├── GV_Schema.docx                # Manufacturing database schema  
+├── LD_schema.dcox                # Labor Department database schema
 ```
 
 ## Database Architectures
@@ -69,14 +62,6 @@ Database-Project/
 * `Sub_Ind(comp_id, ind_id)`
   * Company sub-industry classifications
 
-**Schema:**
-
-```sql
--- See full LD schema in LD_schema.sql
--- Key tables include: person, skill, position, job, company, 
--- GICS, course, works, has_skill, requires, teaches
-```
-
 ### 2. AZ Database (Auto Zone)
 
 **Purpose**: Multi-store retail operations with employee management, inventory tracking, and financial operations
@@ -106,14 +91,6 @@ Database-Project/
 * `Has_Skill(per_id, sk_code)`
   * Employee skills
 
-**Schema:**
-
-```sql
--- See full AZ schema in AZ_schema.sql
--- Key tables include: store, inventory, sales, purchase, 
--- supplier, account_payable, purchase_payment_record, stocking
-```
-
 ### 3. GV Database (Manufacturing)
 
 **Purpose**: Multi-factory manufacturing operations with material management, production tracking, and contract fulfillment
@@ -139,17 +116,9 @@ Database-Project/
 * `Has_Skill(per_id, sk_code)`
   * Employee skills
 
-**Schema:**
-
-```sql
--- See full GV schema in GV_schema.sql
--- Key tables include: factory, material, product, contract, 
--- lineitem, purchase
-```
-
 ## Key Features
 
-### 28 Complex SQL Queries
+### 27 Complex SQL Queries
 
 The project implements comprehensive queries across all three databases:
 
@@ -163,33 +132,32 @@ The project implements comprehensive queries across all three databases:
 7. Analyze sales by time period (AZ)
 8. Calculate biggest profit items (AZ)
 
-**Business Analytics (Queries 9-12):**
-9. Inventory below minimum levels (AZ)
-10. Customer sales totals (GV)
-11. Most purchased materials by quarter (GV)
-12. Top producing factory for best-selling product (GV)
+**Business Analytics (Queries 9-12):**<br>
+9. Inventory below minimum levels (AZ)<br>
+10. Customer sales totals (GV)<br>
+11. Most purchased materials by quarter (GV)<br>
+12. Top producing factory for best-selling product (GV)<br>
 
-**Workforce Management (Queries 13-18):**
-13. Complete employment history for person
-14. Crisis response - find all workers who held specific positions
-15. Find unemployed workers with specific experience
-16. Industry salary statistics (avg, max, min)
-17. Identify biggest employers, industries, and industry groups
+**Workforce Management (Queries 13-18):**<br>
+13. Complete employment history for person<br>
+14. Crisis response - find all workers who held specific positions<br>
+15. Find unemployed workers with specific experience<br>
+16. Industry salary statistics (avg, max, min)<br>
+17. Identify biggest employers, industries, and industry groups<br>
 18. Job distribution across industries
 
-**Advanced Matching (Queries 19-25):**
-19. Course recommendations for skill gaps
-20. Best-paying positions based on skills
-21. List qualified candidates for positions
-22. "Missing-k" analysis (candidates missing k < 4 skills)
-23. Find best candidates for new positions
-24. Analyze missing skills frequency
-25. Track earning increases by industry group
+**Advanced Matching (Queries 19-25):**<br>
+19. Course recommendations for skill gaps<br>
+20. Best-paying positions based on skills<br>
+21. List qualified candidates for positions<br>
+22. "Missing-k" analysis (candidates missing k < 4 skills)<br>
+23. Find best candidates for new positions<br>
+24. Analyze missing skills frequency<br>
+25. Track earning increases by industry group<br>
 
-**Strategic Optimization (Queries 26-28):**
-26. Positions with most openings due to skill shortages
-27. Course sets addressing high-demand skill gaps
-28. Complete training plans with prerequisites (Bonus)
+**Strategic Optimization (Queries 26-27):**<br>
+26. Positions with most openings due to skill shortages<br>
+27. Course sets addressing high-demand skill gaps<br>
 
 ### JDBC Applications
 
@@ -295,12 +263,6 @@ psql -U username -d az_database -f AZ_schema.sql
 psql -U username -d gv_database -f GV_schema.sql
 ```
 
-**Or use the combined script:**
-
-```bash
-psql -U username -d database_name -f make_tables.sql
-```
-
 ### 3. Data Population
 
 **Generate INSERT statements:**
@@ -313,9 +275,9 @@ java Populate_tables > insert_data.sql
 **Execute for each database:**
 
 ```bash
-psql -U username -d ld_database -f insert_data.sql
-psql -U username -d az_database -f insert_data.sql
-psql -U username -d gv_database -f insert_data.sql
+psql -U username -d ld_database -f populate.sql
+psql -U username -d az_database -f populate.sql
+psql -U username -d gv_database -f populate.sql
 ```
 
 ### 4. JDBC Configuration
@@ -597,54 +559,8 @@ contract_id → cus_id, date, sale_amount, pay_schedule
 * Transaction rollback scenarios
 * Multi-database synchronization
 
-### Data Validation
-
-**Referential Integrity:**
-```sql
--- Check orphaned records
-SELECT j.job_code FROM job j
-WHERE j.per_id NOT IN (SELECT per_id FROM person);
-
--- Check missing skills
-SELECT r.sk_code FROM requires r
-WHERE r.sk_code NOT IN (SELECT sk_code FROM skill);
-```
-
-## Performance Optimization
-
-### Indexing Strategy
-
-**Recommended indexes:**
-
-```sql
--- LD Database
-CREATE INDEX idx_works_per_id ON works(per_id);
-CREATE INDEX idx_works_job_code ON works(job_code);
-CREATE INDEX idx_has_skill_per_id ON has_skill(per_id);
-CREATE INDEX idx_requires_pos_code ON requires(pos_code);
-
--- AZ Database
-CREATE INDEX idx_sales_date ON sales(s_year, s_month, s_day);
-CREATE INDEX idx_sales_item ON sales(item_num);
-CREATE INDEX idx_inventory_min ON inventory(quantity, min_level);
-
--- GV Database
-CREATE INDEX idx_contract_date ON contract(date);
-CREATE INDEX idx_lineitem_contract ON lineitem(contract_id);
-CREATE INDEX idx_makes_fac ON makes(fac_id);
-```
-
-### Query Optimization Tips
-
-1. **Use EXISTS instead of IN for large subqueries**
-2. **Avoid SELECT \* - specify needed columns**
-3. **Use LIMIT for large result sets**
-4. **Leverage indexes on foreign keys**
-5. **Use EXPLAIN ANALYZE to identify bottlenecks**
-
 ## Known Limitations
 
-* Date fields stored as VARCHAR instead of DATE type
 * No authentication/authorization system
 * Single-user application (no concurrency control beyond transactions)
 * Limited to three databases (LD, AZ, GV)
@@ -656,8 +572,6 @@ CREATE INDEX idx_makes_fac ON makes(fac_id);
 
 * [ ] Implement web-based UI with REST API
 * [ ] Add user authentication and role-based access control
-* [ ] Convert VARCHAR dates to proper DATE/TIMESTAMP types
-* [ ] Implement connection pooling for better performance
 * [ ] Add data visualization dashboard
 * [ ] Implement stored procedures for complex operations
 * [ ] Add machine learning for job matching recommendations
@@ -665,7 +579,6 @@ CREATE INDEX idx_makes_fac ON makes(fac_id);
 * [ ] Implement automated data synchronization between databases
 * [ ] Add comprehensive logging and audit trails
 * [ ] Create mobile application interface
-* [ ] Implement data warehousing for historical analytics
 
 ## Educational Objectives
 
@@ -709,7 +622,7 @@ Consider using explicit locking if necessary
 
 ## Contributing
 
-This is an academic project completed as part of a Database Systems course. For questions or clarifications, please contact the team members.
+This is an academic project completed as part of a Database Systems course. For questions or clarifications, please contact the lead team member.
 
 ## License
 
