@@ -1,0 +1,40 @@
+Java
+C
+C++
+C#
+Python
+Visual Basic
+.NET Programming
+JavaScript
+JQuery
+XML
+Ruby
+Perl
+VB Script
+Microsoft Windows
+Penetration-testing
+Encryption
+Mobile Development
+Network Configuration
+Forensics
+Bioinformatics
+React
+Angular
+Vue.js
+Node.js
+Docker
+Kubernetes
+AWS
+Azure
+TypeScript
+Go
+Rust
+Swift
+Kotlin
+Flutter
+GraphQL
+MongoDB
+PostgreSQL
+Redis
+Elasticsearch
+Machine Learning

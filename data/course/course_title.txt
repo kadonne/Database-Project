@@ -1,0 +1,30 @@
+General Networking
+IT Management
+JAVA
+JavaScript and jQuery
+Cybersecurity
+Database Administration
+Sales Management
+Project Management Software
+Enterprise Resource Planning
+C And C++
+Advanced React Development
+Cloud Computing with AWS
+Docker and Kubernetes
+Data Science Fundamentals
+Machine Learning Basics
+Mobile App Development
+Advanced Python Programming
+DevOps Best Practices
+Agile Methodologies
+UI/UX Design Principles
+Microservices Architecture
+GraphQL APIs
+Blockchain Fundamentals
+AI Ethics
+Full Stack Web Development
+Security Best Practices
+NoSQL Databases
+Test Driven Development
+CI/CD Pipeline Setup
+System Design Interview Prep

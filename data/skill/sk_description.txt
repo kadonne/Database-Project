@@ -1,0 +1,40 @@
+Programming Language
+Low-level Programming Language
+Programming Language
+Scripting Language
+Programming Language
+Programming Language
+Scripting Language
+Scripting Language
+Query Language
+Scripting Language
+Programming Language
+Programming Language
+Scripting Language
+Operating System
+Security
+Security
+Development
+Networking
+Security
+Analyzing data
+Frontend Framework
+Frontend Framework
+Frontend Framework
+Backend Runtime
+Containerization
+Orchestration
+Cloud Platform
+Cloud Platform
+Programming Language
+Programming Language
+Programming Language
+Mobile Development
+Mobile Development
+Mobile Framework
+API Query Language
+NoSQL Database
+Relational Database
+In-Memory Database
+Search Engine
+AI/ML Technology

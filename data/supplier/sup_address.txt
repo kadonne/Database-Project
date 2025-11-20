@@ -1,0 +1,5 @@
+123 Industrial Blvd
+456 Warehouse Way
+789 Supply St
+321 Vendor Ave
+654 Trade Rd

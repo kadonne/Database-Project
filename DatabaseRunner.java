@@ -1,14 +1,14 @@
 /**
 * @author Ammar Kadic
-* @version 1.2
+* @version 1.3
 * Spring 2019
 * 
 * This program connects to 3 different database oracle accounts and performs various tasks.
 * Each database option has its own query options.
 * Other features can be accessed by numbers 4 through 6.
-* Note: this program isn't runnable anymore due to the expiration of the oracle accounts.
+* Note: Updated to use nextInt() and setInt() where appropriate.
 **/
-package Database;
+// package Database;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -18,25 +18,46 @@ import java.sql.SQLException;
 import java.util.Scanner;
 import java.sql.ResultSet;
 import java.sql.DriverManager;
+import java.sql.Date;
+import java.time.LocalDate;
 
 public class DatabaseRunner 
 {
 	// Database driver and URL for the server
-	static final String driver = "oracle.jdbc.driver.OracleDriver";  
-	static final String url = "jdbc:oracle:thin:@dbsvcs.cs.uno.edu:1521:orcl";
+	// static final String driver = "oracle.jdbc.driver.OracleDriver";  
+	static final String url = "jdbc:postgresql://localhost:5432/";
+	static String user1 = ""; //AZ
+	static String user2 = ""; // LD
+	static String user3 = ""; // GV
+	static String password = "";
 	static Connection con;
 	static PreparedStatement pstmt = null;
 	static ResultSet rset = null;
 	static Scanner in = new Scanner(System.in);
 	static ArrayList<Integer> job_codes = new ArrayList<Integer>();
+	static int per_id = 0;
 	public static void main(String[] args)
 	{
+
+		 if (args.length < 4) 
+		 {
+            System.out.println("Usage: java DatabaseRunner <user1> <user2> <user3> <password>");
+            return;
+        }
+
+		user1 = args[0];
+		user2 = args[1];
+		user3 = args[2];
+		password = args[3];
+
 		for(int i = 20; i<999;i++)
 			job_codes.add(i);
 		Collections.shuffle(job_codes);
 		try
 		{
-			Class.forName("oracle.jdbc.driver.OracleDriver");	
+			// Class.forName("oracle.jdbc.driver.OracleDriver");	
+			Class.forName("org.postgresql.Driver");
+
 			
 			while(true)
 			{
@@ -80,13 +101,24 @@ public class DatabaseRunner
 		try
 		{
 			System.out.println("Connecting to Database AZ");
-			con = DriverManager.getConnection(url, "akadic", "CMT4xtCw");
-			System.out.println(con);
+			con = DriverManager.getConnection(url, user1, password);
 			System.out.println("Successfully connected");
+
 			
 			while(true)
 			{
-				System.out.println("\nWhich query would you like to run? (1-9)");
+				System.out.println("\n1) List the workers by names in the alphabetical order of last names.");
+				System.out.println("\n2) List the staff (salary workers) by salary in descending order.");
+				System.out.println("\n3) List the average annual pay (the salary or wage rates multiplying by 1920 hours) ");
+				System.out.println("\nof each store/factory in descending order");
+				System.out.println("\n4) List the required skills of a given pos_code in a readable format.");
+				System.out.println("\n5) Given a person’s identifier, list this person’s skills in a readable format.");
+				System.out.println("\n6) Given a person’s identifier, list a person’s missing skills for a specific pos_code in a readable format.");
+				System.out.println("\n7) List the total number and the total sales ($) of every item in a given period of time ");
+				System.out.println("(start date, end date) in AZ in the descending order of sales.");
+				System.out.println("\n8) List the item_num, its title and the total profit that made the biggest profit for AZ in 2018.");
+				System.out.println("\n9) Show the items for which the inventory is below the minimum level in AZ system. ");
+				System.out.println("\nWhich query would you like to run? (1-9) (-1 to quit)");
 						
 				int option = in.nextInt();
 				if (option < 1 || option > 9)
@@ -117,7 +149,7 @@ public class DatabaseRunner
 					case 7: System.out.println("Executing Query 7)\n");
 							query7();
 							break;
-					case 8: System.out.println("Executing Query 8)\n"); // ask Dr. Tu about unit and avg_cost
+					case 8: System.out.println("Executing Query 8)\n");
 							query8();
 							break;
 					case 9: System.out.println("Executing Query 9)\n");
@@ -135,11 +167,15 @@ public class DatabaseRunner
 		try
 		{
 			System.out.println("Connecting to Database GV");
-			con = DriverManager.getConnection(url, "kabrisc1", "KVfkx7kh");
+			con = DriverManager.getConnection(url, user3, password);
 			System.out.println("Successfully connected");
 			while(true)
 			{
-				System.out.println("\nWhich query would you like to run? (10-12)");
+				System.out.println("\n10) List the total sales in dollar to each customer of GV in 2018.");
+				System.out.println("\n11) Show m_code, m_name of the material(s) that GV purchased the most (measured by quantity)");
+				System.out.println(" in the fourth quarter of 2018.");
+				System.out.println("\n12) Show the factory name that made the most total quantity of the product that was sold the most in 2018. ");
+				System.out.println("\nWhich query would you like to run? (10-12) (-1 to quit)");
 				int option = in.nextInt();
 				if(option < 10 || option > 12)
 				{
@@ -151,10 +187,10 @@ public class DatabaseRunner
 					case 10: System.out.println("Executing Query 10)\n");
 							query10();
 							break;
-					case 11: System.out.println("Executing Query 10)\n");
+					case 11: System.out.println("Executing Query 11)\n");
 							query11();
 							break;
-					case 12: System.out.println("Executing Query 10)\n");
+					case 12: System.out.println("Executing Query 12)\n");
 							query12();
 							break;
 				}
@@ -170,11 +206,41 @@ public class DatabaseRunner
 		try
 		{
 			System.out.println("Connecting to Database LD");
-			con = DriverManager.getConnection(url, "afang", "WfvbW3pc");
+			con = DriverManager.getConnection(url, user2, password);
 			System.out.println("Successfully Connected");
 			while(true)
 			{
-				System.out.println("\nWhich query would you like to run? (13-27)");
+				System.out.println("\n13) Given a person's identifier, find all the jobs this person is currently holding and worked in the past.");
+				System.out.println("\n14) In a local or national crisis, we need to find all the people who once held a position of the given pos_code. List");
+				System.out.println("per_id, name, job title and the years the person worked in (starting year and ending year).");
+				System.out.println("\n15) Find all the unemployed people who once held a job position of the given pos_code.");
+				System.out.println("\n16) List the average, maximum and minimum annual pay (total salaries or wage rates multiplying by 1920 hours) of each");
+				System.out.println("industry (listed in GICS) in the order of the industry names.");
+				System.out.println("\n17) Find out the biggest employer, industry, and industry group in terms of number of employees. (Three queries)");
+				System.out.println("\n18) Find out the job distribution among industries by showing the number of employees in each industry.");
+				System.out.println("\n19) Given a person's identifier and a pos_code, find the courses (course id and title) that each alone teaches all the");
+				System.out.println("missing skills for this person to be qualified for the specified position, assuming the skill gap of the worker and the");
+				System.out.println("requirement of the position can be covered by one course.");
+				System.out.println("\n20) Given a person's identifier, find the job position with the highest pay rate for this person according to his/her skill");
+				System.out.println("possession.");
+				System.out.println("\n21) Given a position code, list all the names along with the emails of the persons who are qualified for this position.");
+				System.out.println("\n22) When a company cannot find any qualified person for a job position, a secondary solution is to find a person who is");
+				System.out.println("almost qualified to the job position. Make a “missing-k” list that lists people who miss only k skills for a specified");
+				System.out.println("pos_code; k < 4.");
+				System.out.println("\n23) Suppose there is a new position that has nobody qualified. List the persons who miss the least number of skills that");
+				System.out.println("are required by this pos_code and report the “least number”.");
+				System.out.println("\n24) List each of the skill code and the number of people who misses the skill and are in the missing-k list for a given");
+				System.out.println("position code in the ascending order of the people counts.");
+				System.out.println("\n25) Find out the number of the workers whose earnings increased in a specific industry group (use attribute “industry");
+				System.out.println("group” in table Company). [Hint: earning change = the sum of a person's current earnings - the pay of the person's");
+				System.out.println("the last previous job.]");
+				System.out.println("\n26) Find the position that have the most openings due to lack of qualified workers. If there are many openings of a");
+				System.out.println("position but at the same time there are many qualified jobless people. Then training cannot help fill up this type of");
+				System.out.println("job vacancies. What we want to find is the position that has the largest difference between vacancies (the unfilled");
+				System.out.println("jobs) and the number of jobless people who are qualified for the position.");
+				System.out.println("\n27) Find the course sets that teach every skill required by the position(s) found in Query #22. These courses should");
+				System.out.println("effectively help most jobless people become qualified for the jobs with high demands. ");
+				System.out.println("\nWhich query would you like to run? (13-27) (-1 to quit)");
 				int option = in.nextInt();
 				if (option < 13 || option > 27)
 				{
@@ -324,7 +390,7 @@ public class DatabaseRunner
 			System.err.println(e);
 		}
 	}
-	/*Given a person’s identifier, list this person’s skills in a readable format. */
+	/*Given a person's identifier, list this person's skills in a readable format. */
 	public static void query5() throws SQLException
 	{
 		try
@@ -352,7 +418,7 @@ public class DatabaseRunner
 		}
 	}
 	
-	/*Given a person’s identifier, list a person’s missing skills for a specific pos_code in a readable format*/
+	/*Given a person's identifier, list a person's missing skills for a specific pos_code in a readable format*/
 	public static void query6() throws SQLException
 	{
 		try
@@ -380,7 +446,7 @@ public class DatabaseRunner
 										 "FROM skill NATURAL JOIN (( SELECT sk_code\n" + 
 										 							"FROM requires\n" + 
 										 							"WHERE pos_code = ?)\n" + 
-										 							"MINUS\n" + 
+										 							"EXCEPT\n" + 
 										 							"(SELECT sk_code\n" + 
 										 							"FROM has_skill \n" + 
 									     							"WHERE per_id = ?))");
@@ -567,7 +633,7 @@ public class DatabaseRunner
 		}
 	}
 	
-	/*Given a person’s identifier, find all the jobs this person is currently holding and worked in the past.*/
+	/*Given a person's identifier, find all the jobs this person is currently holding and worked in the past.*/
 	public static void query13() throws SQLException
 	{
 		try
@@ -640,7 +706,7 @@ public class DatabaseRunner
 			pstmt = con.prepareStatement ("WITH unemployed_people (per_id) AS (\n" + 
 										"	(SELECT per_id\n" + 
 										"	 FROM works)\n" + 
-										"	 MINUS\n" + 
+										"	 EXCEPT\n" + 
 										"	(SELECT per_id\n" + 
 										"	 FROM works\n" + 
 										"	 WHERE e_y IS NULL))\n" + 
@@ -665,12 +731,6 @@ public class DatabaseRunner
 			pstmt = con.prepareStatement (
 					"WITH avg_job_pay (parent_id, avg_pay) AS (\n" + 
 					"	SELECT parent_id, AVG(ann_pay) AS avg_pay\n" + 
-					"	FROM sub_ind NATURAL JOIN company NATURAL JOIN GICS NATURAL JOIN (\n" + 
-					"		SELECT comp_id, job_code, CASE WHEN pay_type ='wage' THEN pay_rate*1920 ELSE pay_rate END AS ann_pay\n" + 
-					"		FROM job NATURAL JOIN company)\n" + 
-					"	GROUP BY parent_id),\n" + 
-					"     max_job_pay (parent_id, max_pay) AS (\n" + 
-					"	SELECT parent_id, MAX(ann_pay) AS max_pay\n" + 
 					"	FROM sub_ind NATURAL JOIN company NATURAL JOIN GICS NATURAL JOIN (\n" + 
 					"		SELECT comp_id, job_code, CASE WHEN pay_type = 'wage' THEN pay_rate*1920 ELSE pay_rate END AS ann_pay\n" + 
 					"		FROM job NATURAL JOIN company)\n" + 
@@ -808,7 +868,7 @@ public class DatabaseRunner
 					"      	SELECT sk_code\n" + 
 					"	FROM requires\n" + 
 					"      	WHERE pos_code = ? \n" + 
-					"      	MINUS\n" + 
+					"      	EXCEPT\n" + 
 					"      	SELECT sk_code\n" + 
 					"      	FROM has_skill\n" + 
 					"      	WHERE per_id = ?)\n" + 
@@ -817,12 +877,12 @@ public class DatabaseRunner
 					"WHERE NOT EXISTS ( \n" + 
 					"	SELECT sk_code\n" + 
 					"	FROM missing_skills\n" + 
-					"	MINUS\n" + 
+					"	EXCEPT\n" + 
 					"	SELECT sk_code\n" + 
 					"	FROM teaches\n" + 
 					"	WHERE course.c_code = teaches.c_code)");
-			pstmt.setInt(1,pos_code);
-			pstmt.setInt(2,per_id);
+			pstmt.setInt(1, pos_code);
+			pstmt.setInt(2, per_id);
 			rset = pstmt.executeQuery();
 			while (rset.next())
 				System.out.printf("%s %s%n", rset.getString(1), rset.getString(2));
@@ -832,7 +892,7 @@ public class DatabaseRunner
 		}
 		
 	}
-	public static void query20()	// afang WfvbW3pc	kabrisct1 KVfkx7kh
+	public static void query20()
 	{
 		try
 		{
@@ -851,7 +911,7 @@ public class DatabaseRunner
 					"		SELECT R.sk_code\n" + 
 					"		FROM requires R\n" + 
 					"		WHERE P.pos_code = R.pos_code\n" + 
-					"		MINUS\n" + 
+					"		EXCEPT\n" + 
 					"		SELECT HS.sk_code\n" + 
 					"		FROM has_skill HS\n" + 
 					"		WHERE HS.per_id = ?)),\n" + 
@@ -865,7 +925,7 @@ public class DatabaseRunner
 					"FROM (SELECT MAX(pay_rate) AS pay_rate\n" + 
 					"	FROM qual_pos_pay) JOIN qual_pos_pay USING (pay_rate)");
 
-			pstmt.setInt(1,per_id);
+			pstmt.setInt(1, per_id);
 			rset = pstmt.executeQuery();
 			while (rset.next())
 				System.out.printf("%s %s%n", rset.getString(1), rset.getString(2));
@@ -891,7 +951,7 @@ public class DatabaseRunner
 					"		SELECT sk_code\n" + 
 					"		FROM requires\n" + 
 					"		WHERE pos_code = ?\n" + 
-					"		MINUS\n" + 
+					"		EXCEPT\n" + 
 					"		SELECT sk_code\n" + 
 					"		FROM has_skill S\n" + 
 					"		WHERE HS.per_id = S.per_id))\n" + 
@@ -899,7 +959,7 @@ public class DatabaseRunner
 					"FROM person natural join temp");
 			System.out.println("\nWhich pos_code? ");
 			int pos_code = in.nextInt();
-			pstmt.setInt(1,pos_code);
+			pstmt.setInt(1, pos_code);
 			rset = pstmt.executeQuery();
 			while (rset.next())
 				System.out.printf("%s %s %s%n", rset.getString(2), rset.getString(3), rset.getString(4));
@@ -932,8 +992,8 @@ public class DatabaseRunner
 					"WHERE sk_count > k-4");
 			System.out.println("\nWhich pos_code? ");
 			int pos_code = in.nextInt();
-			pstmt.setInt(1,pos_code);
-			pstmt.setInt(2,pos_code);
+			pstmt.setInt(1, pos_code);
+			pstmt.setInt(2, pos_code);
 			rset = pstmt.executeQuery();
 			while(rset.next())
 				System.out.printf("%s %s%n", rset.getString(1), rset.getString(2));
@@ -973,8 +1033,8 @@ public class DatabaseRunner
 					"FROM person NATURAL JOIN least_missing_skills");
 			System.out.println("\nWhich pos_code? ");
 			int pos_code = in.nextInt();
-			pstmt.setInt(1,pos_code);
-			pstmt.setInt(2,pos_code);
+			pstmt.setInt(1, pos_code);
+			pstmt.setInt(2, pos_code);
 			rset = pstmt.executeQuery();
 			while(rset.next())
 				System.out.printf("%s %s %s %s%n", rset.getString(1), rset.getString(2), rset.getString(3), rset.getString(4));
@@ -1013,7 +1073,7 @@ public class DatabaseRunner
 					"     num_of_people (per_id, sk_code) AS (\n" + 
 					"	SELECT per_id, sk_code\n" + 
 					"	FROM missing_k_list, req_skill_pos\n" + 
-					"	MINUS\n" + 
+					"	EXCEPT\n" + 
 					"	SELECT per_id, sk_code\n" + 
 					"	FROM has_skill)\n" + 
 					"SELECT sk_code, COUNT(per_id) AS people_count\n" + 
@@ -1022,9 +1082,9 @@ public class DatabaseRunner
 					"ORDER BY COUNT(per_id)");
 			System.out.println("\nWhich pos_code? ");
 			int pos_code = in.nextInt();
-			pstmt.setInt(1,pos_code);
-			pstmt.setInt(2,pos_code);
-			pstmt.setInt(3,pos_code);
+			pstmt.setInt(1, pos_code);
+			pstmt.setInt(2, pos_code);
+			pstmt.setInt(3, pos_code);
 			rset = pstmt.executeQuery();
 			while(rset.next())
 				System.out.printf("%s %s%n", rset.getString(1), rset.getString(2));
@@ -1035,8 +1095,8 @@ public class DatabaseRunner
 		}
 	}
 	/*Find out the number of the workers whose earnings increased in a specific industry group 
-	 * (use attribute “industry group” in table Company). 
-	 * [Hint: earning change = the sum of a person’s current earnings – the pay of the person’s the last previous job.]*/
+	 * (use attribute "industry group" in table Company). 
+	 * [Hint: earning change = the sum of a person's current earnings – the pay of the person's the last previous job.]*/
 	public static void query25()
 	{
 		try
@@ -1089,7 +1149,7 @@ public class DatabaseRunner
 				"		SELECT sk_code \n" + 
 				"		FROM requires RS\n" + 
 				"		WHERE R.pos_code = RS.pos_code\n" + 
-				"		MINUS\n" + 
+				"		EXCEPT\n" + 
 				"		SELECT sk_code\n" + 
 				"		FROM has_skill HS\n" + 
 				"		WHERE S.per_id = HS.per_id)\n" + 
@@ -1124,25 +1184,17 @@ public class DatabaseRunner
 			pstmt = con.prepareStatement(
 					"CREATE TABLE course_set \n" + 
 					"(\n" + 
-					"	cset_id NUMBER(6,0) PRIMARY KEY,\n" + 
-					"	c_code1 NUMBER(6,0), c_code2 NUMBER(6,0), c_code3 NUMBER(6,0),\n" + 
-					"	setsize NUMBER(2,0)\n" + 
+					"	cset_id SERIAL PRIMARY KEY,\n" + 
+					"	c_code1 INTEGER, c_code2 INTEGER, c_code3 INTEGER,\n" + 
+					"	setsize INTEGER\n" + 
 					")");
 			pstmt.executeUpdate();
 			System.out.println("course_set created.");
-			System.out.println("Creating sequence course_seq.");
-			pstmt = con.prepareStatement(
-					"CREATE SEQUENCE course_seq\n" + 
-					"START WITH 1\n" + 
-					"INCREMENT BY 1\n" + 
-					"MAXVALUE 999999\n" + 
-					"NOCYCLE");
-			pstmt.executeUpdate();
-			System.out.println("course_seq created.");
+			
 			System.out.println("Inserting into course_set.");
 			pstmt = con.prepareStatement (
-					"INSERT INTO course_set \n" + 
-					"	SELECT course_seq.NEXTVAL, C1.c_code, C2.c_code, C3.c_code, 3\n" + 
+					"INSERT INTO course_set (c_code1, c_code2, c_code3, setsize)\n" + 
+					"	SELECT C1.c_code, C2.c_code, C3.c_code, 3\n" + 
 					"	FROM course C1, course C2, course C3\n" + 
 					"	WHERE C1.c_code < C2.c_code AND C2.c_code < C3.c_code");
 			pstmt.executeUpdate();
@@ -1155,7 +1207,7 @@ public class DatabaseRunner
 				"		SELECT sk_code \n" + 
 				"		FROM requires RS\n" + 
 				"		WHERE R.pos_code = RS.pos_code\n" + 
-				"		MINUS\n" + 
+				"		EXCEPT\n" + 
 				"		SELECT sk_code\n" + 
 				"		FROM has_skill HS\n" + 
 				"		WHERE S.per_id = HS.per_id)\n" + 
@@ -1190,7 +1242,7 @@ public class DatabaseRunner
 				"	WHERE NOT EXISTS(\n" + 
 				"		SELECT sk_code\n" + 
 				"		FROM sk_codes\n" + 
-				"		MINUS\n" + 
+				"		EXCEPT\n" + 
 				"		SELECT sk_code\n" + 
 				"		FROM course_set_skill CSSk\n" + 
 				"		WHERE CSSk.cset_id = CSet.cset_id))\n" + 
@@ -1204,10 +1256,6 @@ public class DatabaseRunner
 									rset.getString(3), rset.getString(4));
 				
 			pstmt = con.prepareStatement(
-					"DROP SEQUENCE course_seq");
-			pstmt.executeUpdate();
-			System.out.println("course_seq dropped.");
-			pstmt = con.prepareStatement(
 					"DROP TABLE course_set");
 			pstmt.executeUpdate();
 			System.out.println("course_set dropped.");
@@ -1215,650 +1263,683 @@ public class DatabaseRunner
 		} catch (SQLException e) {
 			System.err.println(e);
 		}
-	}// akadic CMT4xtCw afang WfvbW3pc	kabrisc1 KVfkx7kh
+	}
 	
 	public static void AZhires()
 	{
-		int per_id = 0;
 		int store_id = 0;
+		int per_id = 0;
+		int c_code = 0;
 		try
 		{
-			System.out.println("Connecting to Database LD");
-			con = DriverManager.getConnection(url, "afang", "WfvbW3pc");
+ 			System.out.println("Connecting to Database LD");
+			con = DriverManager.getConnection(url, user2, password);
 			System.out.println("Successfully Connected");
-			System.out.print("Available per_id from LD that want to be hired: ");
-			pstmt = con.prepareStatement(""
-					+ "SELECT per_id FROM person MINUS( "
-					+ "		SELECT per_id "
-					+ "		FROM works "
-					+ "		WHERE e_y IS NULL) "
-					+ "ORDER BY per_id");
-			rset = pstmt.executeQuery();
-			while(rset.next())
-				System.out.printf("%s ", rset.getString(1));
-			System.out.println("\nWhich per_id? ");
-			per_id = in.nextInt();
-			
-			pstmt = con.prepareStatement("SELECT * FROM person WHERE per_id = ?");
-			pstmt.setInt(1,per_id);
-			ResultSet person_info = pstmt.executeQuery();
+			pstmt = con.prepareStatement("SELECT per_id FROM (SELECT per_id, COUNT(sk_code) AS skill_count FROM has_skill\n"
+					+ " 	GROUP BY per_id) WHERE per_id NOT IN (\n"
+					+ "		SELECT per_id \n"
+					+ "		FROM works \n"
+					+ "		WHERE end_date IS NULL) \n"
+					+ "ORDER BY skill_count DESC");
+            ResultSet hiring_per_id = pstmt.executeQuery();
+			System.out.println("\nAvailable per_id (NOTE: the first half of the list has 5-10 skills while the other half has 1-5):");
+			while(hiring_per_id.next())
+				System.out.printf("%d ", hiring_per_id.getInt(1));
+		    System.out.println("\nWhich per_id? ");
+		    per_id = in.nextInt();
 
-			pstmt = con.prepareStatement("SELECT * FROM has_skill WHERE per_id = ?");
-			pstmt.setInt(1,per_id);
-			ResultSet person_skills = pstmt.executeQuery();
 
-			pstmt = con.prepareStatement("SELECT per_id, c_code FROM takes WHERE per_id = ?");
-			pstmt.setInt(1, per_id);
-			ResultSet person_takes = pstmt.executeQuery();
+			// Fetch person info from LD
+            pstmt = con.prepareStatement("SELECT * FROM person WHERE per_id = ?");
+            pstmt.setInt(1, per_id);
+            ResultSet person_info = pstmt.executeQuery();
+
+			// Fetch current skills from LD
+		    pstmt = con.prepareStatement("SELECT * FROM has_skill WHERE per_id = ?");
+		    pstmt.setInt(1, per_id);
+            ResultSet person_skills = pstmt.executeQuery();
 
 			System.out.println("Connecting to Database AZ");
-			con = DriverManager.getConnection(url, "akadic", "CMT4xtCw");
+			con = DriverManager.getConnection(url, user1, password);
 			System.out.println("Successfully Connected");
-			
-			System.out.printf("Inserting per_id: %s info into person.%n", per_id);
+
+			// Insert person into AZ
+			System.out.printf("Inserting per_id: %d info into person.%n", per_id);
 			while(person_info.next())
 			{
 				pstmt = con.prepareStatement(
 						"INSERT INTO person values (?,?,?,?,?,?,?)");
-				pstmt.setString(1,person_info.getString(1));
-				pstmt.setString(2,person_info.getString(2));
-				pstmt.setString(3,person_info.getString(3));
-				pstmt.setString(4,person_info.getString(4));
-				pstmt.setString(5,person_info.getString(5));
-				pstmt.setString(6,person_info.getString(6));
-				pstmt.setString(7,person_info.getString(7));
-				pstmt.executeUpdate();
-			}
-			System.out.println("Successfully inserted.");
-			System.out.printf("Inserting per_id: %s current skills into has_skill.%n", per_id);
-			while(person_skills.next())
-			{
-				pstmt = con.prepareStatement(
-						"INSERT INTO has_skill values (?,?)");
-				pstmt.setString(1,person_skills.getString(1));
-				pstmt.setString(2,person_skills.getString(2));
-				pstmt.executeUpdate();
-			}
-			System.out.println("Successfully inserted.");
-			System.out.printf("Inserting per_id: %s taken courses into takes.%n", per_id);
-			while(person_takes.next())
-			{
-				pstmt = con.prepareStatement(
-						"INSERT INTO takes VALUES (?,?)");
-				pstmt.setString(1,person_takes.getString(1));
-				pstmt.setString(2,person_takes.getString(2));
+				pstmt.setInt(1, person_info.getInt(1));
+				pstmt.setString(2, person_info.getString(2));
+				pstmt.setString(3, person_info.getString(3));
+				pstmt.setString(4, person_info.getString(4));
+				pstmt.setString(5, person_info.getString(5));
+				pstmt.setString(6, person_info.getString(6));
+				pstmt.setString(7, person_info.getString(7));
 				pstmt.executeUpdate();
 			}
 			System.out.println("Successfully inserted.");
 
-			System.out.println("Checking the difference between self-claimed skills from transcript..");
+			// Insert self-claimed skills into AZ
+			System.out.printf("Inserting per_id: %d current skills into has_skill.%n", per_id);
+			while(person_skills.next())
+			{
+				pstmt = con.prepareStatement(
+						"INSERT INTO has_skill values (?,?)");
+				pstmt.setInt(1, person_skills.getInt(1));
+				pstmt.setInt(2, person_skills.getInt(2));
+				pstmt.executeUpdate();
+			}
+			System.out.println("Successfully inserted.");
+
+			// STEP 2: Upload transcripts - input courses into Takes table
+			System.out.println("\n=== Upload Transcripts ===");
+			System.out.println("Enter course completions (enter -1 for c_code to finish):");
+
+			while(true)
+			{
+				try
+				{
+					System.out.print("Course code (c_code): ");
+					c_code = in.nextInt();
+					if(c_code == -1) break;
+
+					pstmt = con.prepareStatement(
+							"INSERT INTO takes VALUES (?,?,?,?,?,?,?,?)");
+					pstmt.setInt(1, per_id);
+					pstmt.setInt(2, c_code);
+					pstmt.setInt(3, 0);
+					pstmt.setDate(4, null);
+					pstmt.setInt(5, 0);
+					pstmt.setString(6, null);
+					pstmt.setString(7, null);
+					pstmt.setBigDecimal(8, null);
+					pstmt.executeUpdate();
+
+					System.out.println("Course added successfully.\n");
+				} catch (SQLException e) {
+					if(e.getSQLState().equals("23503"))
+						System.out.println("There is no course that teaches that skill."); 
+					else if(e.getSQLState().equals("23505"))
+						System.out.println("Cannot add a duplicate course.");
+					else e.printStackTrace();
+				}
+			}
+
+			// Show difference between transcript-derived skills vs self-claimed skills
+			System.out.println("\n=== Analyzing Skills ===");
+			System.out.println("Checking the difference between self-claimed skills and transcript skills...");
+
 			pstmt = con.prepareStatement(
-					"WITH self_claimed_skills (per_id, sk_code) AS (\n" + 
-					"	SELECT per_id, sk_code\n" + 
+					"WITH transcript_skills AS (\n" + 
+					"	SELECT DISTINCT sk_code\n" + 
+					"	FROM takes NATURAL JOIN teaches\n" + 
+					"	WHERE per_id = ?\n" + 
+					"),\n" +
+					"self_claimed_skills AS (\n" + 
+					"	SELECT DISTINCT sk_code\n" + 
 					"	FROM has_skill\n" + 
 					"	WHERE per_id = ?\n" + 
-					"	INTERSECT\n" + 
-					"	SELECT per_id, sk_code \n" + 
-					"	FROM takes NATURAL JOIN teaches\n" + 
-					"	WHERE per_id = ?),\n" + 
-					"    per_skill_count (p_sk_count) AS (\n" + 
-					"	SELECT COUNT(sk_code)\n" + 
-					"	FROM self_claimed_skills),\n" + 
-					"    teaches_skill_count (t_sk_count) AS (\n" + 
-					"	SELECT COUNT(DISTINCT sk_code)\n" + 
-					"	FROM takes NATURAL JOIN TEACHES)\n" + 
-					"SELECT t_sk_count-p_sk_count AS difference\n" + 
-					"FROM per_skill_count,teaches_skill_count");
+					"),\n" +
+					"verified_skills AS (\n" +
+					"	SELECT sk_code FROM transcript_skills\n" +
+					"	INTERSECT\n" +
+					"	SELECT sk_code FROM self_claimed_skills\n" +
+					"),\n" +
+					"unverified_claims AS (\n" +
+					"	SELECT sk_code FROM self_claimed_skills\n" +
+					"	EXCEPT\n" +
+					"	SELECT sk_code FROM transcript_skills\n" +
+					")\n" +
+					"SELECT \n" +
+					"	(SELECT COUNT(*) FROM self_claimed_skills) as claimed_count,\n" +
+					"	(SELECT COUNT(*) FROM transcript_skills) as transcript_count,\n" +
+					"	(SELECT COUNT(*) FROM verified_skills) as verified_count,\n" +
+					"	(SELECT COUNT(*) FROM unverified_claims) as unverified_count");
 			pstmt.setInt(1, per_id);
 			pstmt.setInt(2, per_id);
-			ResultSet rset1 = pstmt.executeQuery();
-			rset1.next();
-			if(rset1.getInt(1) > 5)
+			ResultSet skill_analysis = pstmt.executeQuery();
+
+			if(skill_analysis.next())
 			{
-				System.out.println("This person hasn't passed enough courses and will not be hired.");
-				System.out.println("Requirement: at least 5 skills acquired from courses.");
-				pstmt = con.prepareStatement(
-						"DELETE FROM person WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
-				pstmt.executeUpdate();
-				pstmt = con.prepareStatement(
-						"DELETE FROM takes WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
-				pstmt.executeUpdate();
-				pstmt = con.prepareStatement(
-						"DELETE FROM has_skill WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
-				pstmt.executeUpdate();
-				return;
+				int claimed = skill_analysis.getInt("claimed_count");
+				int transcript = skill_analysis.getInt("transcript_count");
+				int verified = skill_analysis.getInt("verified_count");
+				int unverified = skill_analysis.getInt("unverified_count");
+
+				System.out.printf("Self-claimed skills: %d%n", claimed);
+				System.out.printf("Skills from transcripts: %d%n", transcript);
+				System.out.printf("Verified skills (overlap): %d%n", verified);
+				System.out.printf("Unverified claims: %d%n", unverified);
+
+				// If too many unverified claims, reject
+				if(unverified > 5)
+				{
+					System.out.println("\nWARNING: This person has too many unverified skill claims.");
+					System.out.println("Recommendation: Rescind job offer.");
+
+					// Cleanup
+					pstmt = con.prepareStatement("DELETE FROM person WHERE per_id = ?");
+					pstmt.setInt(1, per_id);
+					pstmt.executeUpdate();
+					pstmt = con.prepareStatement("DELETE FROM takes WHERE per_id = ?");
+					pstmt.setInt(1, per_id);
+					pstmt.executeUpdate();
+					pstmt = con.prepareStatement("DELETE FROM has_skill WHERE per_id = ?");
+					pstmt.setInt(1, per_id);
+					pstmt.executeUpdate();
+					return;
+				}
 			}
-			System.out.println("This person has passed enough courses to be hired.");
-			
+			System.out.println("Skills verification passed.\n");
+
+			// STEP 3: Populate Has_Skill with skills derived from transcripts
+			System.out.println("=== Updating Skills Based on Transcripts ===");
 			pstmt = con.prepareStatement(
-					  "SELECT DISTINCT sk_code "
+					"SELECT DISTINCT sk_code "
 					+ "FROM takes NATURAL JOIN teaches "
 					+ "WHERE per_id = ? "
-					+ "MINUS "
+					+ "EXCEPT "
 					+ "SELECT DISTINCT sk_code "
 					+ "FROM has_skill "
 					+ "WHERE per_id = ?");
-			pstmt.setInt(1,per_id);
-			pstmt.setInt(2,per_id);
+			pstmt.setInt(1, per_id);
+			pstmt.setInt(2, per_id);
 			rset = pstmt.executeQuery();
-			System.out.printf("Inserting acquired skills into has_skill for person: %d%n", per_id);
+
+			int added_skills = 0;
+			System.out.printf("Adding skills derived from courses for person: %d%n", per_id);
 			while(rset.next())
 			{
 				pstmt = con.prepareStatement(
 						"INSERT INTO has_skill values (?,?)");
-				pstmt.setInt(1,per_id);
-				pstmt.setString(2,rset.getString(1));
+				pstmt.setInt(1, per_id);
+				pstmt.setInt(2, rset.getInt(1));
 				pstmt.executeUpdate();
+				added_skills++;
 			}
-			System.out.println("Successfully inserted.");
-			
+			System.out.printf("Added %d skills from transcripts.%n%n", added_skills);
+
+			// STEP 4: Verify if person has required skills for position
+			System.out.println("=== Job Application ===");
 			System.out.print("Available job_codes and stores:\n");
 			pstmt = con.prepareStatement(
 					"SELECT job_code, store_id FROM job");
 			rset = pstmt.executeQuery();
 			System.out.printf("%njob_code%5s store_id%s%n","","");
 			while(rset.next())
-				System.out.printf("%-13s %s%n", rset.getString(1), rset.getString(2));
+				System.out.printf("%-13d %d%n", rset.getInt(1), rset.getInt(2));
 			System.out.println("\nWhich job_code? ");
 			int job_code = in.nextInt();
 			System.out.println("\nWhich store? ");
 			store_id = in.nextInt();
-			
+
+			// Check for skill gaps
 			pstmt = con.prepareStatement(
-					"SELECT sk_code FROM job NATURAL JOIN requires WHERE job_code = ? "
-				+	"MINUS "
-				+ 	"SELECT sk_code FROM has_skill WHERE per_id = ?");
-			pstmt.setInt(1,job_code);
-			pstmt.setInt(2,per_id);
+					"WITH skill_difference AS ("
+				+	"SELECT sk_code FROM job NATURAL JOIN requires WHERE job_code = ? "
+				+	"EXCEPT "
+				+ 	"SELECT sk_code FROM has_skill WHERE per_id = ? )"
+				+	"SELECT"
+				+	"(SELECT COUNT(*) FROM skill_difference) AS skill_difference_count"
+				);
+			pstmt.setInt(1, job_code);
+			pstmt.setInt(2, per_id);
 			rset = pstmt.executeQuery();
-			if(!rset.next())
+			rset.next();
+
+			if(rset.getInt("skill_difference_count") <= 2)
 			{
-				System.out.println("This person qualifies for the position.");
-				pstmt = con.prepareStatement ( 
-						"SELECT * FROM job WHERE job_code = ?");
-				pstmt.setInt(1,job_code);
-				rset = pstmt.executeQuery();
-				while(rset.next())
-				{	
-					System.out.println("Hiring person...");
-					pstmt = con.prepareStatement(
-							"INSERT INTO job VALUES (?,?,?,?,?,?,?,?,?,?)");
-					pstmt.setInt(1, job_codes.get(0));
-					job_codes.remove(0);
-					pstmt.setString(2, rset.getString(2));
-					pstmt.setInt(3, store_id);
-					pstmt.setInt(4, per_id);
-					pstmt.setString(5, rset.getString(5));
-					pstmt.setString(6, rset.getString(6));
-					pstmt.setString(7, rset.getString(7));
-					pstmt.setString(8, rset.getString(8));
-					pstmt.setString(9, rset.getString(9));
-					pstmt.setString(10, rset.getString(10));
-					pstmt.executeUpdate();
-				}
-				System.out.println("Successfully hired\n");
-				pullFromLD();
+				// No skill gap - hire the person
+				System.out.println("\n✓ This person qualifies for the position.");
+				pstmt = con.prepareStatement("SELECT * FROM job WHERE job_code = ?");
+				pstmt.setInt(1, job_code);
+				ResultSet job = pstmt.executeQuery();
+
+				System.out.println("Hiring person...");
+				pstmt = con.prepareStatement(
+						"INSERT INTO works VALUES (?,?,?,?)" );
+				pstmt.setInt(1, per_id);
+				pstmt.setInt(2, job_code);
+				pstmt.setDate(3, Date.valueOf(LocalDate.now()));
+				pstmt.setNull(4, java.sql.Types.DATE);
+				pstmt.executeUpdate();
+
+				System.out.println("Successfully hired!\n");
+
+				pstmt = con.prepareStatement(
+						"SELECT * FROM takes where per_id = ? AND c_code = ?" );
+				pstmt.setInt(1, per_id);
+				pstmt.setInt(2, c_code);
+				ResultSet takes_info = pstmt.executeQuery();
+
+      	      	pstmt = con.prepareStatement("SELECT * FROM person WHERE per_id = ?");
+      	      	pstmt.setInt(1, per_id);
+      	      	person_info = pstmt.executeQuery();
+
+		    	pstmt = con.prepareStatement("SELECT * FROM has_skill WHERE per_id = ?");
+		    	pstmt.setInt(1, per_id);
+      	      	person_skills = pstmt.executeQuery();
+		    	pstmt = con.prepareStatement("SELECT * FROM works WHERE per_id = ?");
+		    	pstmt.setInt(1, per_id);
+      	      	ResultSet works_info = pstmt.executeQuery();
+				pstmt = con.prepareStatement("SELECT position.* FROM position NATURAL JOIN job WHERE job_code = ?");
+				pstmt.setInt(1, job_code);
+				ResultSet position_info = pstmt.executeQuery();
+				updateLD(person_info, person_skills, job, takes_info, works_info, position_info);
 				return;
 			}
 			else
 			{
-				System.out.println("This person doesn't qualify for the position");
+				// STEP 5: Skill gap identified - propose training plan
+				System.out.println("\n✗ This person doesn't qualify for the position");
+				System.out.println("\n=== Training Plan Recommendation ===");
+
 				pstmt = con.prepareStatement(
 						"WITH per_skill (sk_code) AS (\n" + 
 						"	SELECT DISTINCT sk_code FROM job NATURAL JOIN requires WHERE job_code = ?\n" + 
-						"	MINUS\n" + 
+						"	EXCEPT\n" + 
 						"	SELECT DISTINCT sk_code FROM has_skill WHERE per_id = ?\n" + 
 						")\n" + 
-						"SELECT DISTINCT c_code\n" + 
-						"FROM teaches NATURAL JOIN per_skill");
-				pstmt.setInt(1,job_code);
-				pstmt.setInt(2,per_id);
+						"SELECT DISTINCT c_code, c_title\n" + 
+						"FROM course NATURAL JOIN teaches NATURAL JOIN per_skill");
+				pstmt.setInt(1, job_code);
+				pstmt.setInt(2, per_id);
 				rset = pstmt.executeQuery();
-				System.out.println("Recommended training plan: c_code: ");
+
+				System.out.println("Recommended courses to fill skill gaps:");
+				System.out.printf("%-10s %s%n", "c_code", "Course Title");
+				System.out.println("----------------------------------------");
 				while(rset.next())
-					System.out.printf("%s%n", rset.getString(1));
-				
-				pstmt = con.prepareStatement(
-						"DELETE FROM person WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
+					System.out.printf("%-10d %s%n", rset.getInt(1), rset.getString(2));
+
+				// Cleanup - remove candidate from AZ database
+				System.out.println("\nRemoving candidate from AZ database...");
+				pstmt = con.prepareStatement("DELETE FROM person WHERE per_id = ?");
+				pstmt.setInt(1, per_id);
 				pstmt.executeUpdate();
-				pstmt = con.prepareStatement(
-						"DELETE FROM takes WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
+				pstmt = con.prepareStatement("DELETE FROM takes WHERE per_id = ?");
+				pstmt.setInt(1, per_id);
 				pstmt.executeUpdate();
-				pstmt = con.prepareStatement(
-						"DELETE FROM has_skill WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
+				pstmt = con.prepareStatement("DELETE FROM has_skill WHERE per_id = ?");
+				pstmt.setInt(1, per_id);
 				pstmt.executeUpdate();
 				return;
 			}
 		} catch(SQLException e) {
-			System.err.println(e);
-			e.printStackTrace();
 			try
 			{
+				if(e.getSQLState().equals("23505"))
+					System.out.println("Person already exists in the database, continuing..");
 				pstmt = con.prepareStatement(
 						"DELETE FROM person WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
+				pstmt.setInt(1, per_id);
 				pstmt.executeUpdate();
 				pstmt = con.prepareStatement(
 						"DELETE FROM takes WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
+				pstmt.setInt(1, per_id);
 				pstmt.executeUpdate();
 				pstmt = con.prepareStatement(
 						"DELETE FROM has_skill WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
+				pstmt.setInt(1, per_id);
 				pstmt.executeUpdate();
 				System.exit(1);
 			} catch(SQLException r) {
-				System.err.println(r);
+				r.printStackTrace();
 			}
-		} catch (Exception r) {
-			System.err.println(r);
-			System.out.println("Something went wrong");
-			
-			try
-			{
-				pstmt = con.prepareStatement(
-						"DELETE FROM person WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
-				pstmt.executeUpdate();
-				pstmt = con.prepareStatement(
-						"DELETE FROM takes WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
-				pstmt.executeUpdate();
-				pstmt = con.prepareStatement(
-						"DELETE FROM has_skill WHERE per_id = ?");
-				pstmt.setInt(1,per_id);
-				pstmt.executeUpdate();
-				System.exit(1);
-			} catch(SQLException e) {
-				System.err.println(e);
-			}
+	} 
+}
+public static void transferGVworker()
+{
+	try
+	{
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		System.out.println("Connecting to Database GV");
+		con = DriverManager.getConnection(url, user3, password);
+		System.out.println("Successfully Connected");
+		pstmt = con.prepareStatement("SELECT DISTINCT fac_id FROM factory ");
+		ResultSet rset = pstmt.executeQuery();
+		while(rset.next())
+		{
+			list.add(rset.getInt(1));
+			System.out.printf("%d ", rset.getInt(1));
 		}
-	}
-	public static void transferGVworker()
-	{
-		try
+		System.out.print("Factories: " + list);
+		System.out.println("\nWhich factory? ");
+		int fac_id = in.nextInt();
+		System.out.println("\nWhich factory to transfer to? ");
+		int fac_id2 = in.nextInt();
+		boolean bool = false;
+		boolean bool2 = false;
+		for (int i = 0; i<list.size(); i++)
 		{
-			System.out.println("Connecting to Database LD");
-			con = DriverManager.getConnection(url, "kabrisc1", "KVfkx7kh");
-			System.out.println("Successfully Connected");
-			System.out.print("Factories: ");
-			pstmt = con.prepareStatement(
-					"SELECT DISTINCT fac_id FROM factory ");
-			rset = pstmt.executeQuery();
-			ArrayList<Integer> list = new ArrayList<Integer>();
-			while(rset.next())
-			{
-				list.add(rset.getInt(1));
-				System.out.printf("%s ", rset.getString(1));
-			}
-			System.out.println(list);
-			System.out.println("\nWhich factory? ");
-			int fac_id = in.nextInt();
-			System.out.println("\nWhich factory to transfer to? ");
-			int fac_id2 = in.nextInt();
-			boolean bool = false;
-			boolean bool2 = false;
-			for (int i = 0; i<list.size(); i++)
-			{
-				if(list.get(i) == fac_id2)
-					bool = true;
-				if(list.get(i) == fac_id)
-					bool2 = true;
-			}
-			if(!bool || !bool2)
-			{
-				System.out.println("Factory does not exist.");
-				System.exit(1);
-			}
-			pstmt = con.prepareStatement(
-					"SELECT per_id FROM job WHERE fac_id = ?");
-			pstmt.setInt(1, fac_id);
-			System.out.printf("Current working people for factory %s: ", fac_id);
-			rset = pstmt.executeQuery();
-			while(rset.next())
-				System.out.printf("%s ", rset.getString(1));
-			System.out.println("\nWhich person? ");
-			int per_id2 = in.nextInt();
-			pstmt = con.prepareStatement(
-					"SELECT * FROM job WHERE per_id = ? AND fac_id = ?");
-			pstmt.setInt(1,per_id2);
-			pstmt.setInt(2,fac_id);
-			rset = pstmt.executeQuery();
-
-			pstmt = con.prepareStatement(
-					"DELETE FROM job WHERE per_id = ? AND fac_id = ?");
-			pstmt.setInt(1, per_id2);
-			pstmt.setInt(2, fac_id);
-			pstmt.executeUpdate();
-			while(rset.next())
-			{
-				System.out.printf("Updating job at factory %d.%n", fac_id2);
-					pstmt = con.prepareStatement(
-							"INSERT INTO job VALUES (?,?,?,?,?,?,?,?,?,?)");
-					pstmt.setString(1, rset.getString(1));
-					pstmt.setString(2, rset.getString(2));
-					pstmt.setInt(3, fac_id2);
-					pstmt.setInt(4, per_id2);
-					pstmt.setString(5, rset.getString(5));
-					pstmt.setString(6, rset.getString(6));
-					pstmt.setString(7, rset.getString(7));
-					pstmt.setString(8, rset.getString(8));
-					pstmt.setString(9, rset.getString(9));
-					pstmt.setString(10, rset.getString(10));
-					pstmt.executeUpdate();
-				System.out.printf("Person %d now works at factory %d.%n", per_id2, fac_id2);
-			}
-			
-			pullFromLD();
-			
-		} catch(SQLException e) {
-			System.err.println(e);
-		}// akadic CMT4xtCw afang WfvbW3pc	kabrisc1 KVfkx7kh
-	}
-	
-	public static void transferCIOazgv()
-	{
-		Connection con1 = null;
-		Connection con2 = null;
-		Connection con3 = null;
-		try
+			if(list.get(i).equals(fac_id2))
+				bool = true;
+			if(list.get(i).equals(fac_id))
+				bool2 = true;
+		}
+		if(!bool || !bool2)
 		{
-			System.out.println("Connecting to Database AZ...");
-			con1 = DriverManager.getConnection(url, "akadic", "CMT4xtCw");
-			System.out.println("Successfully Connected");
-			con1.setAutoCommit(false);
-			System.out.println("Fetching information of CIO in AZ...");
-			pstmt = con1.prepareStatement(
-					"WITH temp (per_id) AS "
-					+ "(SELECT per_id FROM person NATURAL JOIN job WHERE j_title = 'CIO') "
-					+ "SELECT * from temp natural join person");
-			ResultSet cio_info_az = pstmt.executeQuery();
-			System.out.println("Successfully fetched.");
-			System.out.println("Removing AZ CIO info...");
-			pstmt = con1.prepareStatement(
-					"DELETE FROM person WHERE per_id = (SELECT per_id FROM job NATURAL JOIN person "
-					+ "WHERE j_title = 'CIO')");
-			pstmt.executeUpdate();
-			System.out.println("Success.");
-			System.out.println("Connecting to Database GV...");
-			con2 = DriverManager.getConnection(url, "kabrisc1", "KVfkx7kh");
-			System.out.println("Successfully Connected");
-			con2.setAutoCommit(false);
+			System.out.println("Factory does not exist.");
+			System.exit(1);
+		}
+		pstmt = con.prepareStatement(
+				"SELECT DISTINCT per_id FROM job NATURAL JOIN works WHERE fac_id = ? AND end_date IS NULL");
+		pstmt.setInt(1, fac_id);
+		System.out.printf("Current working people for factory %d: ", fac_id);
+		rset = pstmt.executeQuery();
+		while(rset.next())
+			System.out.printf("%d ", rset.getInt(1));
+		System.out.println("\nWhich person? ");
+		int per_id2 = in.nextInt();
+		pstmt = con.prepareStatement(
+				"SELECT * FROM job WHERE EXISTS (SELECT job_code FROM works WHERE per_id = ?) AND fac_id = ?");
+		pstmt.setInt(1, per_id2);
+		pstmt.setInt(2, fac_id);
+		rset = pstmt.executeQuery();
 
-			System.out.println("Fetching information of CIO in GV...");
-			pstmt = con2.prepareStatement(
-					"WITH temp (per_id) AS "
-					+ "(SELECT per_id FROM person NATURAL JOIN job WHERE j_title = 'CIO') "
-					+ "SELECT * from temp natural join person");
-			ResultSet cio_info_gv = pstmt.executeQuery();
-			System.out.println("Successfully fetched.");
-			System.out.println("Removing AZ CIO info...");
-			pstmt = con2.prepareStatement(
-					"DELETE FROM person WHERE per_id = (SELECT per_id FROM job NATURAL JOIN person "
-					+ "WHERE j_title = 'CIO')");
-			pstmt.executeUpdate();
-			System.out.println("Success.");
-			int cio_az = 0;
-			while(cio_info_az.next())
-			{
-				System.out.println("Inserting AZ CIO info into GV");
-				pstmt = con2.prepareStatement(
-						"INSERT INTO person VALUES (?,?,?,?,?,?,?)");
-				cio_az = cio_info_az.getInt(1);
-				pstmt.setString(1, cio_info_az.getString(1));
-				pstmt.setString(2, cio_info_az.getString(2));
-				pstmt.setString(3, cio_info_az.getString(3));
-				pstmt.setString(4, cio_info_az.getString(4));
-				pstmt.setString(5, cio_info_az.getString(5));
-				pstmt.setString(6, cio_info_az.getString(6));
-				pstmt.setString(7, cio_info_az.getString(7));
-				pstmt.executeUpdate();
-				System.out.println("Successfully inserted CIO into GV");
-			}
-
-			int cio_gv = 0;
-			while(cio_info_gv.next())
-			{
-				System.out.println("Inserting GV CIO info into AZ");
-				pstmt = con1.prepareStatement(
-						"INSERT INTO person VALUES (?,?,?,?,?,?,?)");
-				cio_gv = cio_info_gv.getInt(1);
-				pstmt.setString(1, cio_info_gv.getString(1));
-				pstmt.setString(2, cio_info_gv.getString(2));
-				pstmt.setString(3, cio_info_gv.getString(3));
-				pstmt.setString(4, cio_info_gv.getString(4));
-				pstmt.setString(5, cio_info_gv.getString(5));
-				pstmt.setString(6, cio_info_gv.getString(6));
-				pstmt.setString(7, cio_info_gv.getString(7));
-				pstmt.executeUpdate();
-				System.out.println("Successfully inserted CIO into AZ");
-			}
-			System.out.println("Fetching job info from previous CIO in AZ...");
-			pstmt = con1.prepareStatement(
-					"SELECT * FROM job WHERE j_title = 'CIO'");
-			rset = pstmt.executeQuery();
-			System.out.println("Successfully fetched.");
-			System.out.println("Removing job info from previous CIO in AZ...");
-			pstmt = con1.prepareStatement(
-					"DELETE FROM job WHERE j_title = 'CIO'");
-			pstmt.executeUpdate();
-			System.out.println("Success.");
-
-			System.out.println("Fetching job info from previous CIO in GV...");
-			pstmt = con2.prepareStatement(
-					"SELECT * FROM job WHERE j_title = 'CIO'");
-			ResultSet rset2 = pstmt.executeQuery();
-			System.out.println("Successfully fetched.");
-			System.out.println("Removing job info from previous CIO in GV...");
-			pstmt = con2.prepareStatement(
-					"DELETE FROM job WHERE j_title = 'CIO'");
-			pstmt.executeUpdate();
-			System.out.println("Success.");
-			while(rset.next())
-			{
-				System.out.println("Inserting AZ CIO job into GV");
-				pstmt = con2.prepareStatement(
+		pstmt = con.prepareStatement(
+				"DELETE FROM job WHERE per_id = ? AND fac_id = ?");
+		pstmt.setInt(1, per_id2);
+		pstmt.setInt(2, fac_id);
+		pstmt.executeUpdate();
+		int job_code = 0;
+		while(rset.next())
+		{
+			job_code = rset.getInt(1);
+			System.out.printf("Updating job at factory %d.%n", fac_id2);
+				pstmt = con.prepareStatement(
 						"INSERT INTO job VALUES (?,?,?,?,?,?,?,?,?,?)");
-				pstmt.setString(1, rset.getString(1));
-				pstmt.setString(2, rset.getString(2));
-				pstmt.setString(3, rset.getString(3));
-				pstmt.setInt(4, cio_az);
-				pstmt.setString(5, rset.getString(5));
-				pstmt.setString(6, rset.getString(6));
-				pstmt.setString(7, rset.getString(7));
-				pstmt.setString(8, rset.getString(8));
-				pstmt.setString(9, rset.getString(9));
-				pstmt.setString(10, "GV");
+				pstmt.setInt(1, rset.getInt(1));      
+				pstmt.setString(2, rset.getString(2)); 
+				pstmt.setNull(3, java.sql.Types.INTEGER);
+				pstmt.setInt(3, fac_id2);              
+				pstmt.setInt(4, rset.getInt(4));       
+				pstmt.setInt(5, rset.getInt(5));              
+				pstmt.setString(6, rset.getString(6)); 
+				pstmt.setInt(7, rset.getInt(7));       
+				pstmt.setString(8, rset.getString(8)); 
+				pstmt.setInt(9, rset.getInt(9));       
+				pstmt.setInt(10, rset.getInt(10));     
 				pstmt.executeUpdate();
-				System.out.println("Successfully inserted AZ job CIO into GV");
-			}
-			while(rset2.next())
-			{
-				System.out.println("Inserting GV CIO  job into AZ");
-				pstmt = con1.prepareStatement(
-						"INSERT INTO job VALUES (?,?,?,?,?,?,?,?,?,?)");
-				pstmt.setString(1, rset2.getString(1));
-				pstmt.setString(2, rset2.getString(2));
-				pstmt.setString(3, rset2.getString(3));
-				pstmt.setInt(4, cio_gv);
-				pstmt.setString(5, rset2.getString(5));
-				pstmt.setString(6, rset2.getString(6));
-				pstmt.setString(7, rset2.getString(7));
-				pstmt.setString(8, rset2.getString(8));
-				pstmt.setString(9, rset2.getString(9));
-				pstmt.setString(10, "AZ");
-				pstmt.executeUpdate();
-				System.out.println("Successfully inserted GV CIO job into AZ");
-			}	
-
-			pullFromLD();
-
-		} catch(SQLException e) {
-			System.err.println(e);
-			System.exit(1);	
-		} finally {
-			try
-			{
-				con1.setAutoCommit(true);
-					con1.close();
-					con2.setAutoCommit(true);
-					con2.close();
-			} catch (Exception s) {
-				s.printStackTrace();
-			}
-
+			System.out.printf("Person %d now works at factory %d.%n", per_id2, fac_id2);
 		}
-	}// akadic CMT4xtCw afang WfvbW3pc	kabrisc1 KVfkx7kh
-	
-	public static void transactionGV_EM()
-	{
+		pstmt = con.prepareStatement(
+				"SELECT * FROM takes where per_id = ?" );
+		pstmt.setInt(1, per_id);
+		ResultSet takes_info = pstmt.executeQuery();
+
+   		pstmt = con.prepareStatement("SELECT * FROM person WHERE per_id = ?");
+   		pstmt.setInt(1, per_id);
+   		ResultSet person_info = pstmt.executeQuery();
+
+ 		pstmt = con.prepareStatement("SELECT * FROM has_skill WHERE per_id = ?");
+ 		pstmt.setInt(1, per_id);
+ 	    ResultSet person_skills = pstmt.executeQuery();
+ 		pstmt = con.prepareStatement("SELECT * FROM works WHERE per_id = ?");
+ 		pstmt.setInt(1, per_id);
+    	ResultSet works_info = pstmt.executeQuery();
+		pstmt = con.prepareStatement("SELECT * FROM job WHERE job_code = ?");
+		pstmt.setInt(1, job_code);
+		ResultSet job = pstmt.executeQuery();
+		pstmt = con.prepareStatement("SELECT position.* FROM position NATURAL JOIN job WHERE job_code = ?");
+		pstmt.setInt(1, job_code);
+		ResultSet position_info = pstmt.executeQuery();
+		updateLD(person_info, person_skills, job, takes_info, works_info, position_info);
 		
-	}
-
-	public static void pullFromLD()
-	{
-		try
-		{
-			
-			System.out.println("Connecting to Database AZ");
-			con = DriverManager.getConnection(url, "akadic", "CMT4xtCw");
-			System.out.println("Successfully Connected");
-			pstmt = con.prepareStatement(
-					"SELECT * FROM job");
-			ResultSet job_AZ = pstmt.executeQuery();
-
-			System.out.println("Connecting to Database GV");
-			con = DriverManager.getConnection(url, "kabrisc1", "KVfkx7kh");
-			System.out.println("Successfully Connected");
-			pstmt = con.prepareStatement(
-					"SELECT * FROM job");
-			ResultSet job_GV = pstmt.executeQuery();
-
-			System.out.println("Connecting to Database LD");
-			con = DriverManager.getConnection(url, "afang", "WfvbW3pc");
-			System.out.println("Successfully Connected");
-			pstmt = con.prepareStatement(
-					"SELECT job_code FROM job WHERE comp_id = '7'");
-			ResultSet az_job_code = pstmt.executeQuery();
-
-			System.out.println("DELETING FROM WORKS IN LD FOR AZ...");
-			while(az_job_code.next())
-			{
-				pstmt = con.prepareStatement(
-						"DELETE FROM works WHERE job_code = ?");
-				pstmt.setString(1, az_job_code.getString(1));
-				pstmt.executeUpdate();
-			}
-			System.out.println("SUCCESS");
-
-			pstmt = con.prepareStatement(
-					"SELECT job_code FROM job WHERE comp_id = '8'");
-			ResultSet gv_job_code = pstmt.executeQuery();
-
-			System.out.println("DELETING FROM WORKS IN LD FOR GV...");
-			while(gv_job_code.next())
-			{
-				pstmt = con.prepareStatement(
-						"DELETE FROM works WHERE job_code = ?");
-				pstmt.setString(1,gv_job_code.getString(1));
-				pstmt.executeUpdate();
-			}
-			System.out.println("Success");
-
-			System.out.println("DELETING FROM JOB IN LD FOR AZ...");
-			pstmt = con.prepareStatement(
-					"SELECT job_code FROM job WHERE comp_id = '7'");
-			ResultSet temp = pstmt.executeQuery();
-			while(temp.next())
-			{
-				pstmt = con.prepareStatement(
-						"DELETE FROM job WHERE job_code = ?");
-				pstmt.setString(1,temp.getString(1));
-				pstmt.executeUpdate();
-			}
-			System.out.println("Success");
-			
-			pstmt = con.prepareStatement(
-					"SELECT job_code FROM job WHERE comp_id = '8'");
-			temp = pstmt.executeQuery();
-			System.out.println("DELETING FROM JOB IN LD FOR GV...");
-			while(temp.next())
-			{
-				pstmt = con.prepareStatement(
-						"DELETE FROM job WHERE job_code = ?");
-				pstmt.setString(1,temp.getString(1));
-				pstmt.executeUpdate();
-			}
-			System.out.println("Success");
-
-			System.out.println("INSERTING INTO JOB IN LD FOR AZ...");
-			System.out.println("INSERTING INTO WORKS IN LD FOR AZ...");
-			while(job_AZ.next())
-			{
-				pstmt = con.prepareStatement(
-						"INSERT INTO job VALUES (?,?,?,?,?,?,?,'0')");
-				pstmt.setString(1, job_AZ.getString(1));
-				pstmt.setString(2, job_AZ.getString(2));
-				pstmt.setString(3, "7");
-				pstmt.setString(4, job_AZ.getString(5));
-				pstmt.setString(5, job_AZ.getString(6));
-				pstmt.setString(6, job_AZ.getString(7));
-				pstmt.setString(7, job_AZ.getString(8));
-				pstmt.executeUpdate();
-
-				pstmt = con.prepareStatement(
-						"INSERT INTO works VALUES (?,?,null,null,null,null,null,null)");
-				pstmt.setString(1,job_AZ.getString(4));
-				pstmt.setString(2,job_AZ.getString(1));
-				pstmt.executeUpdate();
-			}
-			System.out.println("Success");
-			System.out.println("Success");
-
-			
-
-			System.out.println("INSERTING INTO JOB IN LD FOR GV...");
-			System.out.println("INSERTING INTO WORKS IN LD FOR GV...");
-			while(job_GV.next())
-			{
-				pstmt = con.prepareStatement(
-						"INSERT INTO job VALUES (?,?,?,?,?,?,?,?)");
-				pstmt.setString(1, job_GV.getString(1));
-				pstmt.setString(2, job_GV.getString(2));
-				pstmt.setString(3, "8");
-				pstmt.setString(4, job_GV.getString(5));
-				pstmt.setString(5, job_GV.getString(6));
-				pstmt.setString(6, job_GV.getString(7));
-				pstmt.setString(7, job_GV.getString(8));
-				pstmt.setString(8, job_GV.getString(9));
-				pstmt.executeUpdate();
-				
-				pstmt = con.prepareStatement(
-						"INSERT INTO works VALUES (?,?, null,null,null,null,null,null)");
-				pstmt.setString(1,job_GV.getString(4));
-				pstmt.setString(2,job_GV.getString(1));
-				pstmt.executeUpdate();
-			}
-			System.out.println("Success");
-			System.out.println("Success");
-			con.close();
-			
-		} catch(SQLException e) {
-			System.err.println(e);
-			e.printStackTrace();
-		}
-		
+	} catch(SQLException e) {
+		e.printStackTrace();
 	}
 }
 
+public static void transferCIOazgv()
+{
+	Connection con1 = null;
+	Connection con2 = null;
+	Connection con3 = null;
+	try
+	{
+		System.out.println("Connecting to Database AZ...");
+		con1 = DriverManager.getConnection(url, user1, password);
+		System.out.println("Successfully Connected");
+		con1.setAutoCommit(false);
+		System.out.println("Fetching information of CIO in AZ...");
+		pstmt = con1.prepareStatement(
+				"WITH temp (per_id) AS "
+				+ "(SELECT per_id FROM person NATURAL JOIN job WHERE j_title = 'CIO') "
+				+ "SELECT * from temp natural join person");
+		ResultSet cio_info_az = pstmt.executeQuery();
+		System.out.println("Successfully fetched.");
+		System.out.println("Removing AZ CIO info...");
+		pstmt = con1.prepareStatement(
+				"DELETE FROM person WHERE per_id = (SELECT per_id FROM job NATURAL JOIN person "
+				+ "WHERE j_title = 'CIO')");
+		pstmt.executeUpdate();
+		System.out.println("Success.");
+		System.out.println("Connecting to Database GV...");
+		con2 = DriverManager.getConnection(url, user3, password);
+		System.out.println("Successfully Connected");
+		con2.setAutoCommit(false);
 
+		System.out.println("Fetching information of CIO in GV...");
+		pstmt = con2.prepareStatement(
+				"WITH temp (per_id) AS "
+				+ "(SELECT per_id FROM person NATURAL JOIN job WHERE j_title = 'CIO') "
+				+ "SELECT * from temp natural join person");
+		ResultSet cio_info_gv = pstmt.executeQuery();
+		System.out.println("Successfully fetched.");
+		System.out.println("Removing GV CIO info...");
+		pstmt = con2.prepareStatement(
+				"DELETE FROM person WHERE per_id = (SELECT per_id FROM job NATURAL JOIN person "
+				+ "WHERE j_title = 'CIO')");
+		pstmt.executeUpdate();
+		System.out.println("Success.");
+		String cio_az_str = "";
+		int cio_az_int = 0;
+		while(cio_info_az.next())
+		{
+			System.out.println("Inserting AZ CIO info into GV");
+			pstmt = con2.prepareStatement(
+					"INSERT INTO person VALUES (?,?,?,?,?,?,?)");
+			cio_az_int = cio_info_az.getInt(1);
+			cio_az_str = String.valueOf(cio_az_int);
+			pstmt.setString(1, cio_az_str);
+			pstmt.setString(2, cio_info_az.getString(2));
+			pstmt.setString(3, cio_info_az.getString(3));
+			pstmt.setString(4, cio_info_az.getString(4));
+			pstmt.setString(5, cio_info_az.getString(5));
+			pstmt.setString(6, cio_info_az.getString(6));
+			pstmt.setString(7, cio_info_az.getString(7));
+			pstmt.executeUpdate();
+			System.out.println("Successfully inserted CIO into GV");
+		}
 
+		String cio_gv_str = "";
+		int cio_gv_int = 0;
+		while(cio_info_gv.next())
+		{
+			System.out.println("Inserting GV CIO info into AZ");
+			pstmt = con1.prepareStatement(
+					"INSERT INTO person VALUES (?,?,?,?,?,?,?)");
+			cio_gv_str = cio_info_gv.getString(1);
+			cio_gv_int = Integer.parseInt(cio_gv_str);
+			pstmt.setInt(1, cio_gv_int);
+			pstmt.setString(2, cio_info_gv.getString(2));
+			pstmt.setString(3, cio_info_gv.getString(3));
+			pstmt.setString(4, cio_info_gv.getString(4));
+			pstmt.setString(5, cio_info_gv.getString(5));
+			pstmt.setString(6, cio_info_gv.getString(6));
+			pstmt.setString(7, cio_info_gv.getString(7));
+			pstmt.executeUpdate();
+			System.out.println("Successfully inserted CIO into AZ");
+		}
+		System.out.println("Fetching job info from previous CIO in AZ...");
+		pstmt = con1.prepareStatement(
+				"SELECT * FROM job WHERE j_title = 'CIO'");
+		rset = pstmt.executeQuery();
+		System.out.println("Successfully fetched.");
+		System.out.println("Removing job info from previous CIO in AZ...");
+		pstmt = con1.prepareStatement(
+				"DELETE FROM job WHERE j_title = 'CIO'");
+		pstmt.executeUpdate();
+		System.out.println("Success.");
 
+		System.out.println("Fetching job info from previous CIO in GV...");
+		pstmt = con2.prepareStatement(
+				"SELECT * FROM job WHERE j_title = 'CIO'");
+		ResultSet rset2 = pstmt.executeQuery();
+		System.out.println("Successfully fetched.");
+		System.out.println("Removing job info from previous CIO in GV...");
+		pstmt = con2.prepareStatement(
+				"DELETE FROM job WHERE j_title = 'CIO'");
+		pstmt.executeUpdate();
+		System.out.println("Success.");
+		while(rset.next())
+		{
+			System.out.println("Inserting AZ CIO job into GV");
+			pstmt = con2.prepareStatement(
+					"INSERT INTO job VALUES (?,?,?,?,?,?,?,?,?,?)");
+			pstmt.setString(1, String.valueOf(rset.getInt(1)));
+			pstmt.setString(2, rset.getString(2));
+			pstmt.setString(3, rset.getString(3));
+			pstmt.setString(4, cio_az_str);
+			pstmt.setString(5, rset.getString(5));
+			pstmt.setInt(6, rset.getInt(6));
+			pstmt.setString(7, rset.getString(7));
+			pstmt.setString(8, String.valueOf(rset.getInt(8)));
+			pstmt.setString(9, rset.getString(9));
+			pstmt.setString(10, "GV");
+			pstmt.executeUpdate();
+			System.out.println("Successfully inserted AZ job CIO into GV");
+		}
+		while(rset2.next())
+		{
+			System.out.println("Inserting GV CIO  job into AZ");
+			pstmt = con1.prepareStatement(
+					"INSERT INTO job VALUES (?,?,?,?,?,?,?,?,?,?)");
+			pstmt.setInt(1, Integer.parseInt(rset2.getString(1)));
+			pstmt.setString(2, rset2.getString(2));
+			pstmt.setInt(3, Integer.parseInt(rset2.getString(3)));
+			pstmt.setInt(4, cio_gv_int);
+			pstmt.setString(5, rset2.getString(5));
+			pstmt.setInt(6, rset2.getInt(6));
+			pstmt.setString(7, rset2.getString(7));
+			pstmt.setInt(8, Integer.parseInt(rset2.getString(8)));
+			pstmt.setString(9, rset2.getString(9));
+			pstmt.setString(10, "AZ");
+			pstmt.executeUpdate();
+			System.out.println("Successfully inserted GV CIO job into AZ");
+		}	
 
+	} catch(SQLException e) {
+		System.err.println(e);
+		System.exit(1);	
+	} finally {
+		try
+		{
+			con1.setAutoCommit(true);
+				con1.close();
+				con2.setAutoCommit(true);
+				con2.close();
+		} catch (Exception s) {
+			s.printStackTrace();
+		}
 
+	}
+}
+
+public static void transactionGV_EM()
+{
+	
+}
+
+public static void updateLD(ResultSet person_info, ResultSet person_skills, ResultSet job_info, ResultSet takes_info, ResultSet works_info, ResultSet position_info)
+{
+	try
+	{
+ 		System.out.println("Connecting to Database LD");
+		con = DriverManager.getConnection(url, user2, password);
+		System.out.println("Successfully Connected");
+
+		while(person_info.next())
+		{
+			pstmt = con.prepareStatement(
+				"INSERT INTO person VALUES(?,?,?,?,?,?,?) ON CONFLICT (per_id) DO NOTHING");
+			pstmt.setInt(1, person_info.getInt(1));
+			pstmt.setString(2, person_info.getString(2));
+			pstmt.setString(3, person_info.getString(3));
+			pstmt.setString(4, person_info.getString(4));
+			pstmt.setString(5, person_info.getString(5));
+			pstmt.setString(6, person_info.getString(6));
+			pstmt.setString(7, person_info.getString(7));
+			pstmt.executeUpdate();
+		}
+		while(position_info.next())
+		{
+			pstmt = con.prepareStatement(
+				"INSERT INTO position VALUES (?,?,?,?,?) ON CONFLICT (pos_code) DO NOTHING");
+			pstmt.setInt(1, position_info.getInt(1));
+			pstmt.setString(2, position_info.getString(2));
+			pstmt.setString(3, position_info.getString(3));
+			pstmt.setInt(4, position_info.getInt(4));
+			pstmt.setInt(5, position_info.getInt(5));
+			pstmt.executeUpdate();
+		}
+		while(person_skills.next())
+		{
+			pstmt = con.prepareStatement(
+				"INSERT INTO has_skill VALUES(?,?) ON CONFLICT (per_id, sk_code) DO NOTHING");
+			pstmt.setInt(1, person_skills.getInt(1));
+			pstmt.setInt(2, person_skills.getInt(2));
+			pstmt.executeUpdate();
+
+		}
+		while(job_info.next())
+		{
+			pstmt = con.prepareStatement(
+				"INSERT INTO job VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT (job_code) DO NOTHING");
+			pstmt.setInt(1, job_info.getInt(1));
+			pstmt.setString(2, job_info.getString(2));
+			pstmt.setInt(3, job_info.getInt(3));
+			pstmt.setInt(4, job_info.getInt(4));
+			pstmt.setInt(5, job_info.getInt(5));
+			pstmt.setInt(6, job_info.getInt(6));
+			pstmt.setString(7, job_info.getString(7));
+			pstmt.setInt(8, job_info.getInt(8));
+			pstmt.setString(9, job_info.getString(9));
+			pstmt.setInt(10, job_info.getInt(10));
+			pstmt.executeUpdate();
+		}
+		while(takes_info.next())
+		{
+			pstmt = con.prepareStatement(
+				"INSERT INTO takes VALUES(?,?,?,?,?,?,?,?) ON CONFLICT (c_code) DO NOTHING");
+			pstmt.setInt(1, takes_info.getInt(1));
+			pstmt.setInt(2, takes_info.getInt(2));
+			pstmt.setInt(3, takes_info.getInt(3));
+			pstmt.setDate(4, takes_info.getDate(4));
+			pstmt.setInt(5, takes_info.getInt(5));
+			pstmt.setString(6, takes_info.getString(6));
+			pstmt.setString(7, takes_info.getString(7));
+			pstmt.setBigDecimal(8, takes_info.getBigDecimal(8));
+			pstmt.executeUpdate();
+
+		}
+		while(works_info.next())
+		{
+			pstmt = con.prepareStatement(
+				"INSERT INTO works VALUES(?,?,?,?) ON CONFLICT (job_code, per_id) DO NOTHING");
+			pstmt.setInt(1, works_info.getInt(1));
+			pstmt.setInt(2, works_info.getInt(2));
+			pstmt.setDate(3, works_info.getDate(3));
+			pstmt.setDate(4, works_info.getDate(4));
+			pstmt.executeUpdate();
+
+		}
+	} catch(SQLException e) {
+		System.err.println(e);
+		e.printStackTrace();
+	}
+		
+	}
+}
