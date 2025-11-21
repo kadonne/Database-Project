@@ -20,12 +20,87 @@ This project implements three independent yet interconnected database systems mo
 
 ```
 Database-Project/
-├── DatabaseRunner.java           # Main JDBC application driver
-├── Populate_tables.java          # Automated data generation
-├── make_tables.sql               # Complete schema creation scripts
-├── AZ_Schema.docx                # Auto Zone database schema
-├── GV_Schema.docx                # Manufacturing database schema  
-├── LD_schema.dcox                # Labor Department database schema
+├── DatabaseRunner.java                          # Main JDBC Application driver  
+├── Populate_tables.java                         # Data population program 
+├── create_databases_users.sql                   # Database and User creation SQL script
+├── setup.ps1                                    # All-in-one script that can run all the other scripts and start up the JDBC Application Driver
+├── repopulate.ps1                               # Script that runs the population program and logs on to each user to populate 
+├── database_run.ps1                             # Runs the JDBC Application Driver 
+├── postgresql-42.7.8.jar                        # POSTGRESQL jar file with the version used at the time 
+├── data/                                        # Data organized into text files for easy addition
+│   ├── person/                                    
+│   ├── skill/                                     
+│   ├── store/                                     
+│   ├── factory/                                   
+│   ├── company/                                   
+│   ├── position/                                  
+│   ├── job/                                       
+│   ├── inventory/                                 
+│   ├── sales/                                     
+│   ├── supplier/                                  
+│   ├── purchase/                                  
+│   ├── industry/                                  
+│   ├── course/                                    
+│   └── takes/                                     
+├── AZ/                                          # AZ database files
+│   ├── make_tables.sql                          # Generate database schema
+│   ├── clear.sql                                # Drop the relations 
+│   └── populate.sql (generated)                 # SQL script that populates the databases 
+├── GV/                                          # GV database files  
+│   ├── make_tables.sql                           
+│   ├── clear.sql                                  
+│   └── populate.sql (generated)                               
+└── LD/                                          #LD database files 
+    ├── make_tables.sql                            
+    ├── clear.sql                                  
+    └── populate.sql (generated)                               
+```
+
+## Installation & Setup
+
+### 1. Database Creation, Population, JDBC Run: All-In-One Script (ignore other steps if you choose this one)
+
+**Run this setup script (Only works for Windows):**
+```powershell
+.\setup.ps1 user1 user2 user2 user_password
+OR
+.\setup.ps1 (default arguments: ammar andy kenneth 12345)
+```
+This script runs everything all at once. Creates databases and users, constructs schemas, populates the databases, runs the JDBC program.
+
+**NOTE: Edit this script and change -U postgres to your postgresql super username:**
+```powershell
+psql -U postgres --set user1=$user1 --set user2=$user2 --set user3=$user3 --set user_pass=$user_pass -f create_databases_users.sql
+```
+
+### 2. Database and User Creation:
+
+**Run this SQL script to create the Databases and Users:**
+```powershell
+psql -U postgres --set user1=$user1 --set user2=$user2 --set user3=$user3 --set user_pass=$user_pass -f create_databases_users.sql
+```
+
+### 3. Database Population
+**Run this to populate the databases: (repopulate.ps1)**
+```powershell
+javac Populate_tables.java
+java Populate_tables
+
+$env:PGPASSWORD = $user_pass;
+
+psql -U $user1 -d $user1 -f AZ\clear.sql -f AZ\make_tables.sql -f AZ\populate.sql;
+psql -U $user2 -d $user2 -f LD\clear.sql -f LD\make_tables.sql -f LD\populate.sql;
+psql -U $user3 -d $user3 -f GV\clear.sql -f GV\make_tables.sql -f GV\populate.sql;
+```
+Where $user_pass can be set to whatever password you assigned to each user. I made it so it's the same for all users for simplicity sake.
+
+### 4. JDBC Run
+**Run this to start the JDBC program: (database_run.ps1)**
+```powershell
+$jar = Get-ChildItem -Path "." -Filter "postgresql*.jar" | Select-Object -First 1
+
+javac -cp $jar.Name .\DatabaseRunner.java
+java -cp ".;$($jar.Name)" DatabaseRunner $user1 $user2 $user3 $user_pass
 ```
 
 ## Database Architectures
@@ -229,87 +304,6 @@ Minimum 4GB RAM
 Multi-core processor recommended for complex queries
 ```
 
-## Installation & Setup
-
-### 1. Database Creation
-
-**Create three separate databases:**
-
-```bash
-# PostgreSQL
-createdb ld_database
-createdb az_database
-createdb gv_database
-
-# Or using psql
-psql -U postgres
-CREATE DATABASE ld_database;
-CREATE DATABASE az_database;
-CREATE DATABASE gv_database;
-```
-
-### 2. Schema Creation
-
-**Execute schema scripts:**
-
-```bash
-# LD Database
-psql -U username -d ld_database -f LD_schema.sql
-
-# AZ Database
-psql -U username -d az_database -f AZ_schema.sql
-
-# GV Database
-psql -U username -d gv_database -f GV_schema.sql
-```
-
-### 3. Data Population
-
-**Generate INSERT statements:**
-
-```bash
-javac Populate_tables.java
-java Populate_tables > insert_data.sql
-```
-
-**Execute for each database:**
-
-```bash
-psql -U username -d ld_database -f populate.sql
-psql -U username -d az_database -f populate.sql
-psql -U username -d gv_database -f populate.sql
-```
-
-### 4. JDBC Configuration
-
-**Update connection parameters in DatabaseRunner.java:**
-
-```java
-// LD Database Connection
-String ld_url = "jdbc:postgresql://localhost:5432/ld_database";
-String ld_user = "username";
-String ld_password = "password";
-
-// AZ Database Connection
-String az_url = "jdbc:postgresql://localhost:5432/az_database";
-String az_user = "username";
-String az_password = "password";
-
-// GV Database Connection
-String gv_url = "jdbc:postgresql://localhost:5432/gv_database";
-String gv_user = "username";
-String gv_password = "password";
-```
-
-### 5. Compile and Run
-
-```bash
-# Compile
-javac DatabaseRunner.java
-
-# Run
-java DatabaseRunner
-```
 
 ## Usage Examples
 
