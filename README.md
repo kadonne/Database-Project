@@ -64,7 +64,7 @@ Database-Project/
 ```powershell
 .\setup.ps1 user1 user2 user2 user_password
 OR
-.\setup.ps1 (default arguments: ammar andy kenneth 12345)
+.\setup.ps1 #(default arguments: ammar andy kenneth 12345)
 ```
 This script runs everything all at once. Creates databases and users, constructs schemas, populates the databases, runs the JDBC program.
 
